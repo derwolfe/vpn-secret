@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["Chris Wolfe <chriswwolfe@gmail.com>"]
 
 [dependencies]
+gpgme = "0.6.0"
