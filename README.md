@@ -6,7 +6,7 @@ your macOs clipboard.
 This can be configured to take the path of the file, if this path won't change, you can add a simple an alias to the full command, e.g. for zsh
 
 ```shell
-alias vpn-password='vpn-secret -f ~/path/to/encrypted/vpn-file.gpg"`
+alias vpnpass='vpn-secret -f ~/path/to/encrypted/vpn-file.gpg"`
 ```
 
 ## How do I get it?
