@@ -88,8 +88,15 @@ fn main() {
     paste(words.into_bytes());
 }
 
-// #[test]
-// fn decrypt_test() {
-//     let pw_string = decrypt_password_file();
-//     println!("{:?}", &pw_string);
-// }
+
+#[test]
+fn find_test() {
+    let pw_file = r#"foo
+blah
+blah: akskhad
+
+usernames:
+username foo password the-password"#;
+    let result = find(pw_file.to_owned().into_bytes());
+    assert!(result == "the-password");
+}
