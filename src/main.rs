@@ -55,8 +55,11 @@ fn decrypt_password_file() -> Vec<u8> {
     let mut ctx = Context::from_protocol(Protocol::OpenPgp).expect("failed building context");
 
     // why isn't this asking for a pin?
+    // let key = ctx.find_secret_key(key)
+    //     .expect("Couldn't find secret key");
+    // ctx.add_signer(&key).unwrap();
     ctx.decrypt(&input, &mut output)
-        .expect("failed to decrypt file, need key");
+        .expect("failed to decrypt file");
 
     output
 }
