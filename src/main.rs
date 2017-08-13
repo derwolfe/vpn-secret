@@ -1,10 +1,13 @@
 extern crate gpgme;
+extern crate clap;
 
 use std::process::{Command, Stdio};
 use std::io::Write;
 use std::fs::File;
 
+use clap::{Arg, App};
 use gpgme::{Context, Protocol};
+
 
 fn paste(target_text: Vec<u8>) -> String {
     let mut child = Command::new("pbcopy")
@@ -45,33 +48,48 @@ fn find(plaintext: Vec<u8>) -> String {
         .expect("failed getting password string");
 
     // allocate a new owned string that we can return out
-    password.to_string()
+    password
+        .trim()
+        .to_string()
 }
 
-fn decrypt_password_file() -> Vec<u8> {
-    let input = File::open("/Users/Chris/Code/secure/rms/files/environment-vpn.gpg")
+fn decrypt_password_file(fp: String) -> Vec<u8> {
+    let input = File::open(fp)
         .expect("couldn't open vpn secret file");
     let mut output = Vec::new();
-    let mut ctx = Context::from_protocol(Protocol::OpenPgp).expect("failed building context");
-
-    // why isn't this asking for a pin?
-    // let key = ctx.find_secret_key(key)
-    //     .expect("Couldn't find secret key");
-    // ctx.add_signer(&key).unwrap();
+    let mut ctx = Context::from_protocol(Protocol::OpenPgp)
+        .expect("failed building context");
     ctx.decrypt(&input, &mut output)
         .expect("failed to decrypt file");
 
     output
 }
 
+fn parse_args() -> String {
+    let matcher = App::new("VPN secret")
+        .version("0.2.0")
+        .about("fetches the last password in an encrypted file")
+        .arg(Arg::with_name("encrypted-file")
+             .short("f")
+             .long("encryted-file")
+             .value_name("FILE")
+             .takes_value(true))
+        .get_matches();
+    matcher
+        .value_of("encrypted-file")
+        .unwrap()
+        .to_string()
+}
+
 fn main() {
-    let passwords = decrypt_password_file();
+    let filepath = parse_args();
+    let passwords = decrypt_password_file(filepath);
     let words = find(passwords);
     paste(words.into_bytes());
 }
 
-#[test]
-fn decrypt_test() {
-    let pw_string = decrypt_password_file();
-    println!("{:?}", &pw_string);
-}
+// #[test]
+// fn decrypt_test() {
+//     let pw_string = decrypt_password_file();
+//     println!("{:?}", &pw_string);
+// }
